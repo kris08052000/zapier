@@ -19,12 +19,17 @@ async function main(){
         take : 20
     })
 
-    pendingRows.forEach(r => {
-        producer.send({
-            topic: Topicname,
-            messages: pendingRows.map(r => ({value: r.zapRunId}))
+    console.log(pendingRows);
+
+
+    producer.send({
+        topic: Topicname,
+        messages: pendingRows.map(r => {
+            return {
+                value: JSON.stringify({ zapRunId: r.zapRunId, stage: 0 })
+            }
         })
-    })
+    }) 
 
     await client.zapRunOutbox.deleteMany({
         where : {
@@ -33,6 +38,7 @@ async function main(){
             }
         }
     })
+    await new Promise(r => setTimeout(r, 3003));
     }
 }
 
